@@ -106,15 +106,18 @@ footer .ct .cnpj{font-size:10px;color:#9FAAD0}
 
 @media (max-width:720px){
   .sheet:not(.pdf) header.band,.sheet:not(.pdf) .intro,.sheet:not(.pdf) .pn7,.sheet:not(.pdf) .sol,.sheet:not(.pdf) .duo,.sheet:not(.pdf) footer{padding-left:16px;padding-right:16px}
-  .sheet:not(.pdf) .pn7{flex-direction:column;align-items:center}
-  .sheet:not(.pdf) .headrow{flex-direction:column}
-  .sheet:not(.pdf) .titleblock{width:auto}
+  .sheet:not(.pdf) .pn7{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:16px;row-gap:12px;align-items:center}
+  .sheet:not(.pdf) .pn7 .body,.sheet:not(.pdf) .headrow{display:contents}
+  .sheet:not(.pdf) .pn7 .photo{width:130px;grid-column:1;grid-row:1}
+  .sheet:not(.pdf) .pn7 .photo img{width:130px;height:232px}
+  .sheet:not(.pdf) .titleblock{width:auto;grid-column:2;grid-row:1}
+  .sheet:not(.pdf) .chart,.sheet:not(.pdf) .feats,.sheet:not(.pdf) .topo{grid-column:1 / -1}
+  .sheet:not(.pdf) .topo{height:auto}
   .sheet:not(.pdf) .feats,.sheet:not(.pdf) .duo{grid-template-columns:minmax(0,1fr)}
   .sheet:not(.pdf) .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
   .sheet:not(.pdf) .tag{align-items:flex-start;text-align:left}
   .sheet:not(.pdf) footer .ct{align-items:flex-start;text-align:left}
 }
-@media (prefers-reduced-motion:reduce){.alarm.on{animation:none}}
 </style>
 </head>
 <body>
@@ -214,7 +217,7 @@ footer .ct .cnpj{font-size:10px;color:#9FAAD0}
     <div class="ct">
       <span class="site">grkuster.com.br</span>
       <span>kuster@grkuster.com.br</span>
-      <span>[TELEFONE / WHATSAPP]</span>
+      <span>WhatsApp (15) 99165-0851</span>
       <span class="cnpj">CNPJ 30.270.258/0001-79</span>
     </div>
   </footer>
@@ -263,7 +266,7 @@ footer .ct .cnpj{font-size:10px;color:#9FAAD0}
     var hot=rc[2]>LIMIT; alarm.classList.toggle('on',hot); dot.setAttribute('fill',hot?'#FF4D4D':'#FF8A3D');
   }
   var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var DUR=3200, HOLD=5000, start=null, raf=null;
+  var DUR=3200, HOLD=1000, start=null, raf=null;
   function frame(ts){
     if(start===null)start=ts;
     var e=ts-start, p=Math.min(e/DUR,1);
@@ -271,7 +274,7 @@ footer .ct .cnpj{font-size:10px;color:#9FAAD0}
     if(e<DUR+HOLD){raf=requestAnimationFrame(frame)}else{start=null;raf=requestAnimationFrame(frame)}
   }
   function finish(){if(raf)cancelAnimationFrame(raf);raf=null;draw(N-1)}
-  if(reduce){draw(N-1)}else{raf=requestAnimationFrame(frame)}
+  raf=requestAnimationFrame(frame);
 
   // ---- PDF em uma página A4
   var btn=document.getElementById('btn-pdf'),status=document.getElementById('status'),sheet=document.getElementById('sheet');
@@ -280,7 +283,7 @@ footer .ct .cnpj{font-size:10px;color:#9FAAD0}
     btn.disabled=true;status.textContent='Gerando PDF…';
     finish();
     sheet.classList.add('pdf');
-    var done=function(){sheet.classList.remove('pdf');btn.disabled=false;if(!reduce){raf=requestAnimationFrame(frame)}};
+    var done=function(){sheet.classList.remove('pdf');btn.disabled=false;start=null;raf=requestAnimationFrame(frame)};
     (document.fonts?document.fonts.ready:Promise.resolve()).then(function(){
       return html2canvas(sheet,{scale:2.5,backgroundColor:'#FFFFFF',useCORS:true,windowWidth:900});
     }).then(function(cv){
